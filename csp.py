@@ -27,10 +27,9 @@ class CSP:
         self.numbers = numbers
         self.groups = groups
         self.constraints = constraints
-
+        
         self.grid = grid
         self.cell_to_groups = {(row_idx, col_idx): [] for row_idx in range(self.height) for col_idx in range(self.width)}
-
 
     def fill_cell_to_groups(self):
         """
@@ -43,8 +42,11 @@ class CSP:
         Before completing this function, make sure to read the assignment description and study the data structures created
         in the __init__ function above (self.groups and self.cell_to_groups).
         """
+        for i, group in enumerate(self.groups):
+            for group2 in group:
+                self.cell_to_groups[group2].append(i)
 
-        # TODO: write this function 
+        return self.cell_to_groups
 
         raise NotImplementedError()
 
