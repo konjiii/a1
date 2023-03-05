@@ -62,6 +62,15 @@ class CSP:
                                sum up to this number. This is None if there is no sum constraint for the given group. 
         """
 
+        sum = 0
+        for i in group:
+            sum += self.grid[i]
+        
+        if sum <= sum_constraint:
+            return True
+        else:
+            return False
+
         # TODO: write this function
 
         raise NotImplementedError()
@@ -78,7 +87,7 @@ class CSP:
         :param count_constraint: Integer specifying that a given number cannot occur more than this amount of times. 
                                  This is None if there is no count constraint for the given group. 
         """
-
+        
         # TODO: write this function
 
         raise NotImplementedError()
