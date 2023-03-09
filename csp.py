@@ -42,15 +42,14 @@ class CSP:
         Before completing this function, make sure to read the assignment description and study the data structures created
         in the __init__ function above (self.groups and self.cell_to_groups).
         """
+
+        # enumerate to get the index of a group(i) and the coordinates of a group(group)
         for i, group in enumerate(self.groups):
+            # get every individual coordinate from the group
             for group2 in group:
+                # append the coordinate to the group(i) where it belongs
                 self.cell_to_groups[group2].append(i)
-
-        return self.cell_to_groups
-
-        raise NotImplementedError()
-
-
+              
     def satisfies_sum_constraint(self, group: typing.List[typing.Tuple[int,int]], sum_constraint: int) -> bool:
         """
         Function that checks whether the given group satisfies the given sum constraint (group smaller or equal 
@@ -62,10 +61,13 @@ class CSP:
                                sum up to this number. This is None if there is no sum constraint for the given group. 
         """
 
-        sum = 0
+        sum = 0 
+      
+        # sum up all values of a group
         for i in group:
             sum += self.grid[i]
-        
+          
+        # check if the sum satisfies the sum_constraint
         if sum <= sum_constraint:
             return True
         else:
@@ -89,7 +91,19 @@ class CSP:
         """
         
         # TODO: write this function
+        
+        list = []
+        #for each element in group
+        for i in group:
+            #count how many times the value of the element is in the group
+            count = list.count(self.grid[i])
+            if count == count_constraint:
+                return False
+            else:
+                #the value is added to the list so it can be counted in the next loop
+                list.append(self.grid[i])
 
+        return True
         raise NotImplementedError()
 
 
@@ -100,6 +114,18 @@ class CSP:
 
         :param group_indices: The indices of the groups for which we check all of the constraints 
         """
+
+        # check for every index in i if the sum and count constraints are satisfied.
+        for i in group_indices:
+            # initially give the variable constraints the boolean False
+            constraint = False
+            # if both the sum and count constraints are satisfied change the variable constraint to True
+            if self.satisfies_sum_constraint(self.groups[i], self.constraints[0][0]) == True:
+                if self.satisfies_count_constraint(self.groups[i], self.constraints[0][1]) == True:
+                    constraint = True
+            
+        # return the outcome
+        return constraint
 
         # TODO: write this function
 
@@ -117,6 +143,38 @@ class CSP:
 
         :param empty_locations: list of empty locations that still need a value from self.numbers 
         """
+
+        for location in empty_locations:
+            copy_locations = empty_locations
+            copy_locations.remove(location)
+            for number in self.numbers:
+                copy_numbers = self.numbers
+                self.grid[location] = number
+                result = self.search(copy_locations)
+                if result is not None:
+                    return result
+                self.grid[location] = 0
+            
+
+        # print(empty_locations)
+        # print(self.numbers)
+        # print(self.grid)
+        # list = []
+
+        # for i in range(len(self.groups)):
+        #     list.append(i)
+        # for i in empty_locations:
+        #     for j in self.numbers:
+        #         self.grid[i] = j
+        #         if self.satisfies_group_constraints(list) == False:
+        #             a = None
+        #             continue
+        #         else:
+        #             a = self.grid
+        #             break
+        
+        # return a
+
 
         # TODO: write this function
 
