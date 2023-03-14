@@ -31,6 +31,7 @@ class CSP:
         self.grid = grid
         self.cell_to_groups = {(row_idx, col_idx): [] for row_idx in range(self.height) for col_idx in range(self.width)}
 
+
     def fill_cell_to_groups(self):
         """
         Function that fills in the self.cell_to_groups datastructure, which maps a cell location (row_idx, col_idx)
@@ -49,7 +50,8 @@ class CSP:
             for group2 in group:
                 # append the coordinate to the group(i) where it belongs
                 self.cell_to_groups[group2].append(i)
-              
+
+
     def satisfies_sum_constraint(self, group: typing.List[typing.Tuple[int,int]], sum_constraint: int) -> bool:
         """
         Function that checks whether the given group satisfies the given sum constraint (group smaller or equal 
@@ -91,17 +93,15 @@ class CSP:
         """
         
         # TODO: write this function
-        
         list = []
-        #for each element in group
+
         for i in group:
-            #count how many times the value of the element is in the group
-            count = list.count(self.grid[i])
-            if count == count_constraint:
-                return False
-            else:
-                #the value is added to the list so it can be counted in the next loop
+            if self.grid[i] != 0:
                 list.append(self.grid[i])
+        
+        for i in list:
+            if list.count(i) > count_constraint:
+                return False
 
         return True
         raise NotImplementedError()
@@ -119,11 +119,13 @@ class CSP:
         for i in group_indices:
             # initially give the variable constraints the boolean False
             constraint = False
-            # if both the sum and count constraints are satisfied change the variable constraint to True
-            if self.satisfies_sum_constraint(self.groups[i], self.constraints[0][0]) == True:
-                if self.satisfies_count_constraint(self.groups[i], self.constraints[0][1]) == True:
-                    constraint = True
-            
+            # if both the sum and count constraints are satisfied change the variable constraint to True and continue to the next iteration
+            if self.satisfies_sum_constraint(self.groups[i], self.constraints[0][0]) == True and self.satisfies_count_constraint(self.groups[i], self.constraints[0][1]) == True:
+                constraint = True
+                continue
+            # if one of the constraints is not satisfied, break the loop
+            break
+
         # return the outcome
         return constraint
 
@@ -144,38 +146,59 @@ class CSP:
         :param empty_locations: list of empty locations that still need a value from self.numbers 
         """
 
-        for location in empty_locations:
-            copy_locations = empty_locations
-            copy_locations.remove(location)
-            for number in self.numbers:
-                copy_numbers = self.numbers
-                self.grid[location] = number
-                result = self.search(copy_locations)
-                if result is not None:
-                    return result
-                self.grid[location] = 0
-            
+        print("#####################")        
+        print(self.grid)
+        print(self.constraints)
+        print(empty_locations)
+        print(self.numbers)
+        group_indices = []
 
-        # print(empty_locations)
-        # print(self.numbers)
-        # print(self.grid)
-        # list = []
+        for i in range(len(self.groups)):
+            group_indices.append(i)
 
-        # for i in range(len(self.groups)):
-        #     list.append(i)
-        # for i in empty_locations:
-        #     for j in self.numbers:
-        #         self.grid[i] = j
-        #         if self.satisfies_group_constraints(list) == False:
-        #             a = None
-        #             continue
-        #         else:
-        #             a = self.grid
-        #             break
+        if len(empty_locations) == 0:
+            return self.grid
         
-        # return a
+        location = empty_locations.pop(0)
+        print(location)
+        for number in self.numbers:
+            self.grid[location] = number
+            if self.satisfies_group_constraints(group_indices) == False:
+                self.grid[location] = 0
+                continue
+            result = self.search(empty_locations)
+            print("success")
+            break
+        print("end")
+        try:
+            return result
+        except:
+            print("none")
+            return None
 
+        group_indices=[]
+        copy_locations = empty_locations.copy()
 
+        for i in range(len(self.groups)):
+            group_indices.append(i)
+
+        if len(copy_locations)==0:
+            return self.grid
+
+        location = copy_locations.pop(0)
+        for number in self.numbers:
+            self.grid[empty_locations[0]] = number
+            if self.satisfies_group_constraints(group_indices) == False:
+                self.grid[empty_locations[0]] = 0
+                continue
+            result = self.search(copy_locations)
+            break
+
+        try:
+            return result
+        except:
+            return None
+        
         # TODO: write this function
 
         raise NotImplementedError()
